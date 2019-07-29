@@ -46,3 +46,6 @@ sysinfo.txt
 
 # Crashlytics generated file
 crashlytics-build.properties
+
+# Unity Git plugin generated dlls
+Assets/Plugins/Github/Editor/
