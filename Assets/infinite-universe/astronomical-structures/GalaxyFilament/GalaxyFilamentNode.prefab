@@ -61,5 +61,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   universe: {fileID: 0}
-  precision: 10000
-  unitSize: 1000000000
+  precision: 1
+  unitSize: 1000000000000
