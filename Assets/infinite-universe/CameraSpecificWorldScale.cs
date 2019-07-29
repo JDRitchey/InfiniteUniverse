@@ -9,32 +9,48 @@ public class CameraSpecificWorldScale : MonoBehaviour
   public double scalePower = 1;
 
   new Camera camera;
-  InfiniteUniverse universe;
 
   Matrix4x4 prevWorldMatrix;
   private void Start() {
     camera = GetComponent<Camera>();
-    universe = GameObject.FindObjectOfType<InfiniteUniverse>();
   }
 
+  Dictionary<UniverseEntity, ScaleData> scaleDataMap = new Dictionary<UniverseEntity, ScaleData>();
+
   private void OnPreCull() {
-    float scale = (float)System.Math.Pow(scaleBase, scalePower);
-    universe.transform.position = camera.transform.position - camera.transform.position * scale;
-    universe.transform.localScale = new Vector3(scale, scale, scale);
+    var entities = FindObjectsOfType<UniverseEntity>();
+
+    foreach(var entity in entities) {
+      double cameraScaling = System.Math.Pow(scaleBase, scalePower);
+      double cameraUnitScaling = (cameraScaling * entity.unitSize);
+      bool tooLarge = cameraUnitScaling > 1;
+
+      scaleDataMap.Add(entity, new ScaleData {
+        originalPosition = entity.transform.position,
+        originalScale = entity.transform.localScale
+      });
+      if(tooLarge) {
+        entity.transform.position = camera.transform.position;
+        entity.transform.localScale = Vector3.zero;
+      } else {
+        entity.transform.position = Vector3.Lerp(camera.transform.position, entity.transform.position*entity.unitSize, (float)cameraScaling);
+        entity.transform.localScale *= (float)cameraUnitScaling;
+      }
+    }
   }
   
   private void OnPostRender() {
-    universe.transform.position = Vector3.zero;
-    universe.transform.localScale = Vector3.one;
+    foreach(var pair in scaleDataMap) {
+      var entity = pair.Key;
+      var scaleData = pair.Value;
+      entity.transform.position = scaleData.originalPosition;
+      entity.transform.localScale = scaleData.originalScale;
+    }
+    scaleDataMap.Clear();
   }
 
-  
-  //private void OnPreCull() {
-  //  float scale = (float)System.Math.Pow(scaleBase, scalePower);
-  //  camera.worldToCameraMatrix *= Matrix4x4.Scale(new Vector3(scale, scale, scale));
-  //}
-  //
-  //private void OnPostRender() {
-  //  camera.ResetWorldToCameraMatrix();
-  //}
+  private class ScaleData {
+    public Vector3 originalPosition;
+    public Vector3 originalScale;
+  }
 }

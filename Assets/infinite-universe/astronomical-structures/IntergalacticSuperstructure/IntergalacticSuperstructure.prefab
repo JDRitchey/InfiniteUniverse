@@ -27,7 +27,7 @@ Transform:
   m_GameObject: {fileID: 2661895344817895663}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1e+16, y: 1e+16, z: 1e+18}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -44,7 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b56455ab3caea0428f621c97bd22730, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  regionSize: 1e+26
+  regionSize: 1000
   galaxyFilamentPrefab: {fileID: 3583690754198119994, guid: 180667975df81744aa0da6e9e74cc691,
     type: 3}
   galaxyFilamentNodePrefab: {fileID: 635793419774440715, guid: a31a4e9be124f2c4b8865caa617dfd3b,
@@ -62,3 +62,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   universe: {fileID: 0}
+  precision: 10000
+  unitSize: 1000000000

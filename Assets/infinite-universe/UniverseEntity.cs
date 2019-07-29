@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using static BigVec3.Util;
+using BigInteger = System.Numerics.BigInteger;
 
 public class UniverseEntity : MonoBehaviour{
   public InfiniteUniverse universe;
+  public long precision = 10000;
+  public long unitSize = 1;
 
   BigVec3 universalPosition;
   Vector3 localPosition;
@@ -17,14 +20,14 @@ public class UniverseEntity : MonoBehaviour{
   private void Start() {
     if (!universe)
       universe = FindObjectOfType<InfiniteUniverse>();
-    universalPosition = BigVec3.create(transform.position * universe.precision);
+    universalPosition = BigVec3.create(transform.position * precision);
     localPosition = transform.position;
     universe.registerEntity(this);
   }
 
   void LateUpdate() {
     if (localPosition != transform.position) {
-      universalPosition += BigVec3.create((transform.position - localPosition) * universe.precision);
+      universalPosition += BigVec3.create((transform.position - localPosition) * precision);
       localPosition = transform.position;
     }
   }
@@ -34,7 +37,7 @@ public class UniverseEntity : MonoBehaviour{
   }
 
   public void UpdateGameObjectPosition() {
-    transform.position = vec((universalPosition - universe.OriginOffset)) / universe.precision;
+    transform.position = vec((universalPosition - universe.OriginOffset*universe.observer.unitSize/unitSize)) / precision;
     localPosition = transform.position;
   }
 }

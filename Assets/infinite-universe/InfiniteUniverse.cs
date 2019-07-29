@@ -7,7 +7,6 @@ public class InfiniteUniverse : MonoBehaviour{
   public UniverseEntity observer;
   BigVec3 originOffset = new BigVec3();
   public BigVec3 OriginOffset { get { return originOffset; } }
-  public readonly long precision = 10000;
   public readonly long offsetRegionSize = 10000000;
 
   HashSet<UniverseEntity> entities = new HashSet<UniverseEntity>();

@@ -16,6 +16,6 @@ public class EntityPhysics : MonoBehaviour{
 
   void FixedUpdate() {
     float dt = Time.deltaTime;
-    entity.UniversalPosition += BigVec3.create(velocity*entity.universe.precision*Time.deltaTime);
+    entity.UniversalPosition += BigVec3.create(velocity*entity.precision*Time.deltaTime);
   }
 }
