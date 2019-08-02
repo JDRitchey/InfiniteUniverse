@@ -32,8 +32,4 @@ public class GalaxyFilament : MonoBehaviour{
     endModel.localRotation = Quaternion.LookRotation(end);
     endModel.localScale = vec(endRadius, endRadius, end.magnitude);
   }
-
-  private void Update() {
-    Debug.DrawLine(transform.position + start, transform.position + end);
-  }
 }

@@ -7,7 +7,7 @@ using BigInteger = System.Numerics.BigInteger;
 public class UniverseEntity : MonoBehaviour{
   public InfiniteUniverse universe;
   public long precision = 10000;
-  public long unitSize = 1;
+  public double unitSize = 1;
 
   BigVec3 universalPosition;
   Vector3 localPosition;
@@ -37,7 +37,7 @@ public class UniverseEntity : MonoBehaviour{
   }
 
   public void UpdateGameObjectPosition() {
-    transform.position = vec((universalPosition - universe.OriginOffset * universe.observer.unitSize * precision / unitSize / universe.observer.precision )) / precision;
+    transform.position = vec((universalPosition - universe.OriginOffset * new BigInteger(universe.observer.unitSize * precision) / new BigInteger(unitSize * universe.observer.precision))) / precision;
     localPosition = transform.position;
   }
 }

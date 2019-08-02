@@ -23,7 +23,7 @@ public class CameraSpecificWorldScale : MonoBehaviour
     foreach(var entity in entities) {
       double cameraScaling = System.Math.Pow(scaleBase, scalePower);
       double cameraUnitScaling = (cameraScaling * entity.unitSize);
-      bool tooLarge = cameraUnitScaling > 1;
+      bool tooLarge = cameraUnitScaling > 1000;
 
       scaleDataMap.Add(entity, new ScaleData {
         originalPosition = entity.transform.position,
@@ -33,7 +33,7 @@ public class CameraSpecificWorldScale : MonoBehaviour
         entity.transform.position = camera.transform.position;
         entity.transform.localScale = Vector3.zero;
       } else {
-        entity.transform.position = Vector3.Lerp(camera.transform.position, entity.transform.position*entity.unitSize, (float)cameraScaling);
+        entity.transform.position = Vector3.Lerp(camera.transform.position, entity.transform.position*(float)entity.unitSize, (float)cameraScaling);
         entity.transform.localScale *= (float)cameraUnitScaling;
       }
     }

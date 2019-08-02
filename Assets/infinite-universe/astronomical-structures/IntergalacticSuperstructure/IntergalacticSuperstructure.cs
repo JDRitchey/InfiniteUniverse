@@ -19,7 +19,7 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
     var entity = GetComponent<UniverseEntity>();
     var seed = entity.UniversalPosition.GetHashCode();
     var rand = new System.Random(seed);
-    int n = rand.Next(64, 256);
+    int n = rand.Next(128, 512);
 
     double galaxyWindow = regionSize/100;
     double galaxyDensity = 1 / (galaxyWindow * galaxyWindow * galaxyWindow);
@@ -27,7 +27,7 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
     for (int i = 0; i < n; i++) {
       nodes.Add(new Node {
         pos = vec(0.5*Lerp(-regionSize, regionSize, rand.NextDouble()), 0.5 * Lerp(-regionSize, regionSize, rand.NextDouble()), 0.5 * Lerp(-regionSize, regionSize, rand.NextDouble())),
-        radius = ff(Lerp(regionSize / 100, regionSize / 10, rand.NextDouble())),
+        radius = ff(Lerp(regionSize / 1000, regionSize / 50, rand.NextDouble())),
         density = ff(Lerp(galaxyDensity / 100, galaxyDensity * 10, rand.NextDouble()))
       });
     }
@@ -35,7 +35,7 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
     // we should generate m segments
     // each segment gets a random pair of nodes
     // we perform k passes wherein we choose m segments at random and attempt to replace the nodes with a closer pair (if the randomly chosen pair is further apart we keep what we had)
-    int m = rand.Next(128, 512);
+    int m = rand.Next(256, 1024);
     
     var segments = new List<Segment>();
     for (int i = 0; i < m; i++) {
