@@ -81,7 +81,7 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
       var filamentNodeEntity = galaxyFilamentNode.GetComponent<UniverseEntity>();
 
       filamentNodeEntity.universe = universe;
-      filamentNodeEntity.UniversalPosition = entity.UniversalPosition + BigVec3.create(node.pos*filamentNodeEntity.precision);
+      filamentNodeEntity.UniversalPosition = entity.UniversalPosition * filamentNodeEntity.precision / entity.precision + BigVec3.create(node.pos*filamentNodeEntity.precision);
 
       galaxyFilamentNode.radius = node.radius;
       galaxyFilamentNode.density = node.density;
@@ -93,7 +93,7 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
       var center = 0.5f * segment.a.pos + 0.5f * segment.b.pos;
     
       filamentEntity.universe = universe;
-      filamentEntity.UniversalPosition = entity.UniversalPosition + BigVec3.create(center*filamentEntity.precision);
+      filamentEntity.UniversalPosition = entity.UniversalPosition * filamentEntity.precision / entity.precision + BigVec3.create(center*filamentEntity.precision);
     
       galaxyFilament.start = segment.a.pos - center;
       galaxyFilament.startRadius = segment.a.radius;
