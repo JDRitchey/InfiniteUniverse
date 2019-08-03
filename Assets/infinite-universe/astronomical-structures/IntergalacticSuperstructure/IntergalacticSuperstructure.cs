@@ -9,24 +9,37 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
   public float regionSize = 1e+26f;
   public GalaxyFilament galaxyFilamentPrefab;
   public GalaxyFilamentNode galaxyFilamentNodePrefab;
-  InfiniteUniverse universe;
+  public InfiniteUniverse universe;
   void Start() {
-    universe = FindObjectOfType<InfiniteUniverse>();
+    if(!universe)
+      universe = FindObjectOfType<InfiniteUniverse>();
     ExpandRegion();
   }
+  
+  void OnDestroy() {
+    CollapseRegion();
+  }
 
+  public void CollapseRegion() {
+    foreach(var child in children)
+      Destroy(child);
+    children = new List<GameObject>();
+  }
+
+  List<GameObject> children = new List<GameObject>();
   public void ExpandRegion() {
+
     var entity = GetComponent<UniverseEntity>();
     var seed = entity.UniversalPosition.GetHashCode();
     var rand = new System.Random(seed);
-    int n = rand.Next(128, 512);
+    int n = rand.Next(6, 16);
 
     double galaxyWindow = regionSize/100;
     double galaxyDensity = 1 / (galaxyWindow * galaxyWindow * galaxyWindow);
     var nodes = new List<Node>();
     for (int i = 0; i < n; i++) {
       nodes.Add(new Node {
-        pos = vec(0.5*Lerp(-regionSize, regionSize, rand.NextDouble()), 0.5 * Lerp(-regionSize, regionSize, rand.NextDouble()), 0.5 * Lerp(-regionSize, regionSize, rand.NextDouble())),
+        pos = vec(0.75*Lerp(-regionSize, regionSize, rand.NextDouble()), 0.75 * Lerp(-regionSize, regionSize, rand.NextDouble()), 0.75 * Lerp(-regionSize, regionSize, rand.NextDouble())),
         radius = ff(Lerp(regionSize / 1000, regionSize / 50, rand.NextDouble())),
         density = ff(Lerp(galaxyDensity / 100, galaxyDensity * 10, rand.NextDouble()))
       });
@@ -35,7 +48,7 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
     // we should generate m segments
     // each segment gets a random pair of nodes
     // we perform k passes wherein we choose m segments at random and attempt to replace the nodes with a closer pair (if the randomly chosen pair is further apart we keep what we had)
-    int m = rand.Next(256, 1024);
+    int m = rand.Next(8, 24);
     
     var segments = new List<Segment>();
     for (int i = 0; i < m; i++) {
@@ -48,7 +61,7 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
       });
     }
 
-    int k = n*n/2 + n + m;
+    int k = 2 * n + m;
     for (int i = 0; i < k; i++) {
       var seg = segments[rand.Next(0, m)];
       var a = nodes[rand.Next(0, n)];
@@ -79,20 +92,21 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
     foreach(var node in nodes) {
       var galaxyFilamentNode = Instantiate(galaxyFilamentNodePrefab, universe.transform);
       var filamentNodeEntity = galaxyFilamentNode.GetComponent<UniverseEntity>();
-
       filamentNodeEntity.universe = universe;
+
       filamentNodeEntity.UniversalPosition = entity.UniversalPosition * filamentNodeEntity.precision / entity.precision + BigVec3.create(node.pos*filamentNodeEntity.precision);
 
       galaxyFilamentNode.radius = node.radius;
       galaxyFilamentNode.density = node.density;
+      children.Add(galaxyFilamentNode.gameObject);
     }
 
     foreach (var segment in segments) {
       var galaxyFilament = Instantiate(galaxyFilamentPrefab, universe.transform);
       var filamentEntity = galaxyFilament.GetComponent<UniverseEntity>();
+      filamentEntity.universe = universe;
       var center = 0.5f * segment.a.pos + 0.5f * segment.b.pos;
     
-      filamentEntity.universe = universe;
       filamentEntity.UniversalPosition = entity.UniversalPosition * filamentEntity.precision / entity.precision + BigVec3.create(center*filamentEntity.precision);
     
       galaxyFilament.start = segment.a.pos - center;
@@ -105,11 +119,8 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
     
       galaxyFilament.middleRadius = segment.radius;
       galaxyFilament.middleDensity = segment.density;
+      children.Add(galaxyFilament.gameObject);
     }
-  }
-
-  public void CollapseRegion() {
-
   }
 
   class Node {

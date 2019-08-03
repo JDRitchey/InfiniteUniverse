@@ -66,6 +66,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f0f7dccadbe92742945f8df0a0cb432, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  universe: {fileID: 0}
   precision: 10000
-  unitSize: 1e+26
+  unitSize: 1

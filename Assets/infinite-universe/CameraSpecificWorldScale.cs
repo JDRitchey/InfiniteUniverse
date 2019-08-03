@@ -15,20 +15,25 @@ public class CameraSpecificWorldScale : MonoBehaviour
     camera = GetComponent<Camera>();
   }
 
-  Dictionary<UniverseEntity, ScaleData> scaleDataMap = new Dictionary<UniverseEntity, ScaleData>();
+  ScaleData[] scaleData = new ScaleData[0];
 
   private void OnPreCull() {
     var entities = FindObjectsOfType<UniverseEntity>();
-
+    if(entities.Length > scaleData.Length)
+      scaleData = new ScaleData[entities.Length];
+    else if(entities.Length < scaleData.Length / 2)
+      scaleData = new ScaleData[entities.Length];
+    int i = 0;
     foreach(var entity in entities) {
       double cameraScaling = System.Math.Pow(scaleBase, scalePower);
       double cameraUnitScaling = (cameraScaling * entity.unitSize);
-      bool tooLarge = cameraUnitScaling > 1000;
+      bool tooLarge = cameraUnitScaling > 1;
 
-      scaleDataMap.Add(entity, new ScaleData {
+      scaleData[i++] = new ScaleData {
+        entity = entity,
         originalPosition = entity.transform.position,
         originalScale = entity.transform.localScale
-      });
+      };
       if(tooLarge) {
         entity.transform.position = camera.transform.position;
         entity.transform.localScale = Vector3.zero;
@@ -37,19 +42,26 @@ public class CameraSpecificWorldScale : MonoBehaviour
         entity.transform.localScale *= (float)cameraUnitScaling;
       }
     }
+    while(i < scaleData.Length){
+      scaleData[i] = null;
+      ++i;
+    }
   }
   
   private void OnPostRender() {
-    foreach(var pair in scaleDataMap) {
-      var entity = pair.Key;
-      var scaleData = pair.Value;
-      entity.transform.position = scaleData.originalPosition;
-      entity.transform.localScale = scaleData.originalScale;
+    for(int i = 0; i < scaleData.Length; i++) {
+      var data = scaleData[i];
+      if(data == null)
+        break;
+      var entity = data.entity;
+      entity.transform.position = data.originalPosition;
+      entity.transform.localScale = data.originalScale;
     }
-    scaleDataMap.Clear();
   }
 
+
   private class ScaleData {
+    public UniverseEntity entity;
     public Vector3 originalPosition;
     public Vector3 originalScale;
   }

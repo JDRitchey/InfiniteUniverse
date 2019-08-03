@@ -2,12 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Camera))]
 public class InfiniteCamera : MonoBehaviour{
-  public int cameraCount = 10;
-  public float maxViewDistance = 1.0E+30f;
+  public Camera mainCamera;
+  public int cameraCount = 4;
+
   private void Start() {
-    var camera = GetComponent<Camera>();
+    for(int i = 0; i < cameraCount-1; i++) {
+      var camera = Instantiate(mainCamera, transform);
+      Destroy(camera.GetComponent<AudioListener>());
+      if(i < cameraCount-2)
+        camera.clearFlags = CameraClearFlags.Depth;
+      camera.depth -= i;
+      var worldScale = camera.GetComponent<CameraSpecificWorldScale>();
+      worldScale.scalePower -= i;
+    }
+    mainCamera.clearFlags = CameraClearFlags.Depth;
   }
 
 

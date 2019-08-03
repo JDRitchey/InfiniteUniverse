@@ -6,6 +6,14 @@ using BigInteger = System.Numerics.BigInteger;
 
 public class UniverseEntity : MonoBehaviour{
   public InfiniteUniverse universe;
+  InfiniteUniverse Universe {
+    get {
+      if(!universe)
+        universe = FindObjectOfType<InfiniteUniverse>();
+      return universe;
+    }
+  }
+
   public long precision = 10000;
   public double unitSize = 1;
 
@@ -18,11 +26,10 @@ public class UniverseEntity : MonoBehaviour{
   }
 
   private void Start() {
-    if (!universe)
+    if(!universe)
       universe = FindObjectOfType<InfiniteUniverse>();
     universalPosition = BigVec3.create(transform.position * precision);
     localPosition = transform.position;
-    universe.registerEntity(this);
   }
 
   void LateUpdate() {
@@ -32,12 +39,8 @@ public class UniverseEntity : MonoBehaviour{
     }
   }
 
-  private void OnDestroy() {
-    universe.unregisterEntity(this);
-  }
-
   public void UpdateGameObjectPosition() {
-    transform.position = vec((universalPosition - universe.OriginOffset * new BigInteger(universe.observer.unitSize * precision) / new BigInteger(unitSize * universe.observer.precision))) / precision;
+    transform.position = vec((universalPosition - Universe.OriginOffset * new BigInteger(Universe.observer.unitSize * precision) / new BigInteger(unitSize * Universe.observer.precision))) / precision;
     localPosition = transform.position;
   }
 }
