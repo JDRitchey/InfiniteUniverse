@@ -337,7 +337,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f0f7dccadbe92742945f8df0a0cb432, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  precision: 10000
+  universe: {fileID: 0}
+  precision: 100
   unitSize: 1
 --- !u!4 &515057805
 Transform:
@@ -377,7 +378,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lightSpeed: 1000
-  velocity: {x: 0, y: 0, z: 1}
+  velocity: {x: 0, y: 0, z: 100}
 --- !u!1 &743400385
 GameObject:
   m_ObjectHideFlags: 0
@@ -1073,6 +1074,21 @@ PrefabInstance:
       propertyPath: observer
       value: 
       objectReference: {fileID: 515057804}
+    - target: {fileID: 3413421560523276134, guid: f72ab229c13dca04ca7e3e705677f7cf,
+        type: 3}
+      propertyPath: superstructureUnitSize
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3413421560523276134, guid: f72ab229c13dca04ca7e3e705677f7cf,
+        type: 3}
+      propertyPath: superstructurePrecision
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3413421560523276134, guid: f72ab229c13dca04ca7e3e705677f7cf,
+        type: 3}
+      propertyPath: superstructureRegionSize
+      value: 1000
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f72ab229c13dca04ca7e3e705677f7cf, type: 3}
 --- !u!1 &1955317847

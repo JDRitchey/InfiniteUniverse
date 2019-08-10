@@ -49,6 +49,7 @@ MonoBehaviour:
     type: 3}
   galaxyFilamentNodePrefab: {fileID: 635793419774440715, guid: a31a4e9be124f2c4b8865caa617dfd3b,
     type: 3}
+  universe: {fileID: 0}
 --- !u!114 &6524442262755622467
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,5 +62,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f0f7dccadbe92742945f8df0a0cb432, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  precision: 10000
+  universe: {fileID: 0}
+  precision: 100
   unitSize: 1

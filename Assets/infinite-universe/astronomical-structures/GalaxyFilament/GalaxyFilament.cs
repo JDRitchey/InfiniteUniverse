@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using static VecExtensions.Vec;
 
-[RequireComponent(typeof(UniverseEntity))]
 public class GalaxyFilament : MonoBehaviour{
   public Vector3 start;
   public Vector3 end;

@@ -10,37 +10,33 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
   public GalaxyFilament galaxyFilamentPrefab;
   public GalaxyFilamentNode galaxyFilamentNodePrefab;
   public InfiniteUniverse universe;
+
+  UniverseEntity entity;
+  List<Segment> segments = new List<Segment>();
+  List<Node> nodes = new List<Node>();
+
+  void OnDestroy() {
+    gameObject.name += ".destroyed";
+  }
+
   void Start() {
     if(!universe)
       universe = FindObjectOfType<InfiniteUniverse>();
-    ExpandRegion();
-  }
-  
-  void OnDestroy() {
-    CollapseRegion();
-  }
 
-  public void CollapseRegion() {
-    foreach(var child in children)
-      Destroy(child);
-    children = new List<GameObject>();
-  }
+    if(!entity)
+      entity = GetComponent<UniverseEntity>();
 
-  List<GameObject> children = new List<GameObject>();
-  public void ExpandRegion() {
-
-    var entity = GetComponent<UniverseEntity>();
     var seed = entity.UniversalPosition.GetHashCode();
     var rand = new System.Random(seed);
-    int n = rand.Next(6, 16);
+    int n = rand.Next(24, 64);
 
     double galaxyWindow = regionSize/100;
     double galaxyDensity = 1 / (galaxyWindow * galaxyWindow * galaxyWindow);
-    var nodes = new List<Node>();
-    for (int i = 0; i < n; i++) {
+    nodes.Clear();
+    for(int i = 0; i < n; i++) {
       nodes.Add(new Node {
-        pos = vec(0.75*Lerp(-regionSize, regionSize, rand.NextDouble()), 0.75 * Lerp(-regionSize, regionSize, rand.NextDouble()), 0.75 * Lerp(-regionSize, regionSize, rand.NextDouble())),
-        radius = ff(Lerp(regionSize / 1000, regionSize / 50, rand.NextDouble())),
+        pos = vec(0.6*Lerp(-regionSize, regionSize, rand.NextDouble()), 0.6 * Lerp(-regionSize, regionSize, rand.NextDouble()), 0.6 * Lerp(-regionSize, regionSize, rand.NextDouble())),
+        radius = ff(Lerp(regionSize / 2000, regionSize / 100, rand.NextDouble())),
         density = ff(Lerp(galaxyDensity / 100, galaxyDensity * 10, rand.NextDouble()))
       });
     }
@@ -48,10 +44,10 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
     // we should generate m segments
     // each segment gets a random pair of nodes
     // we perform k passes wherein we choose m segments at random and attempt to replace the nodes with a closer pair (if the randomly chosen pair is further apart we keep what we had)
-    int m = rand.Next(8, 24);
-    
-    var segments = new List<Segment>();
-    for (int i = 0; i < m; i++) {
+    int m = rand.Next(16, 64);
+
+    segments.Clear();
+    for(int i = 0; i < m; i++) {
       var a = nodes[rand.Next(0, n)];
       var b = nodes[rand.Next(0, n)];
       segments.Add(new Segment {
@@ -62,26 +58,26 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
     }
 
     int k = 2 * n + m;
-    for (int i = 0; i < k; i++) {
+    for(int i = 0; i < k; i++) {
       var seg = segments[rand.Next(0, m)];
       var a = nodes[rand.Next(0, n)];
       var b = nodes[rand.Next(0, n)];
       float d0 = (seg.a.pos - seg.b.pos).sqrMagnitude;
       float d1 = (a.pos - b.pos).sqrMagnitude;
-      if (seg.a == seg.b || a != b && d1 < d0) {
+      if(seg.a == seg.b || a != b && d1 < d0) {
         seg.a = a;
         seg.b = b;
       }
     }
-    
-    for (int i = m - 1; i >= 0; i--) {
+
+    for(int i = m - 1; i >= 0; i--) {
       var seg = segments[i];
-      if (seg.a == seg.b) {
+      if(seg.a == seg.b) {
         segments.RemoveAt(i);
       } else {
-        for (int j = 0; j < i; j++) {
+        for(int j = 0; j < i; j++) {
           var segJ = segments[j];
-          if (seg.a == segJ.a && seg.b == segJ.b || seg.a == segJ.b && seg.b == segJ.a) {
+          if(seg.a == segJ.a && seg.b == segJ.b || seg.a == segJ.b && seg.b == segJ.a) {
             segments.RemoveAt(i);
             break;
           }
@@ -89,6 +85,58 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
       }
     }
 
+    CreateFacade();
+    ShowFacade();
+  }
+
+  List<GameObject> facadeChildren = new List<GameObject>();
+  void CreateFacade() {
+    foreach(var node in nodes) {
+      var galaxyFilamentNode = Instantiate(galaxyFilamentNodePrefab, transform);
+      galaxyFilamentNode.gameObject.name += ".facade";
+      var filamentNodeEntity = galaxyFilamentNode.GetComponent<UniverseEntity>();
+      GameObject.DestroyImmediate(filamentNodeEntity);
+
+      galaxyFilamentNode.transform.localPosition = node.pos;
+
+      galaxyFilamentNode.radius = node.radius;
+      galaxyFilamentNode.density = node.density;
+      facadeChildren.Add(galaxyFilamentNode.gameObject);
+    }
+
+    foreach(var segment in segments) {
+      var galaxyFilament = Instantiate(galaxyFilamentPrefab, transform);
+      galaxyFilament.gameObject.name += ".facade";
+      var filamentEntity = galaxyFilament.GetComponent<UniverseEntity>();
+      GameObject.DestroyImmediate(filamentEntity);
+
+      var center = 0.5f * segment.a.pos + 0.5f * segment.b.pos;
+      galaxyFilament.transform.localPosition = center;
+
+      galaxyFilament.start = segment.a.pos - center;
+      galaxyFilament.startRadius = segment.a.radius;
+      galaxyFilament.startDensity = segment.a.density;
+
+      galaxyFilament.end = segment.b.pos - center;
+      galaxyFilament.endRadius = segment.b.radius;
+      galaxyFilament.endDensity = segment.b.density;
+
+      galaxyFilament.middleRadius = segment.radius;
+      galaxyFilament.middleDensity = segment.density;
+      facadeChildren.Add(galaxyFilament.gameObject);
+    }
+  }
+
+  void ShowFacade() {
+
+  }
+  void HideFacade() {
+
+  }
+
+
+  List<GameObject> children = new List<GameObject>();
+  void CreateChildren() {
     foreach(var node in nodes) {
       var galaxyFilamentNode = Instantiate(galaxyFilamentNodePrefab, universe.transform);
       var filamentNodeEntity = galaxyFilamentNode.GetComponent<UniverseEntity>();
@@ -101,26 +149,49 @@ public class IntergalacticSuperstructure : MonoBehaviour, ExpandableRegion{
       children.Add(galaxyFilamentNode.gameObject);
     }
 
-    foreach (var segment in segments) {
+    foreach(var segment in segments) {
       var galaxyFilament = Instantiate(galaxyFilamentPrefab, universe.transform);
       var filamentEntity = galaxyFilament.GetComponent<UniverseEntity>();
       filamentEntity.universe = universe;
       var center = 0.5f * segment.a.pos + 0.5f * segment.b.pos;
-    
+
       filamentEntity.UniversalPosition = entity.UniversalPosition * filamentEntity.precision / entity.precision + BigVec3.create(center*filamentEntity.precision);
-    
+
       galaxyFilament.start = segment.a.pos - center;
       galaxyFilament.startRadius = segment.a.radius;
       galaxyFilament.startDensity = segment.a.density;
-    
+
       galaxyFilament.end = segment.b.pos - center;
       galaxyFilament.endRadius = segment.b.radius;
       galaxyFilament.endDensity = segment.b.density;
-    
+
       galaxyFilament.middleRadius = segment.radius;
       galaxyFilament.middleDensity = segment.density;
       children.Add(galaxyFilament.gameObject);
     }
+  }
+  void ShowChildren() {
+
+  }
+
+  void HideChildren() {
+
+  }
+
+
+  public void CollapseRegion() {
+    HideChildren();
+    ShowFacade();
+  }
+
+  bool firstExpand = true;
+  public void ExpandRegion() {
+    if(firstExpand){
+      firstExpand = false;
+      CreateChildren();
+    }
+    HideFacade();
+    ShowChildren();
   }
 
   class Node {

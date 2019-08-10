@@ -21,15 +21,22 @@ public class UniverseEntity : MonoBehaviour{
   Vector3 localPosition;
 
   public BigVec3 UniversalPosition {
-    get { return universalPosition; }
-    set { universalPosition = value; UpdateGameObjectPosition(); }
+    get {
+      return universalPosition;
+    }
+    set {
+      universalPosition = value;
+      UpdateGameObjectPosition();
+    }
   }
 
   private void Start() {
     if(!universe)
       universe = FindObjectOfType<InfiniteUniverse>();
-    universalPosition = BigVec3.create(transform.position * precision);
-    localPosition = transform.position;
+    if(localPosition != transform.position) {
+      universalPosition = BigVec3.create(transform.position * precision);
+      localPosition = transform.position;
+    }
   }
 
   void LateUpdate() {
